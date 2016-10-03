@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>Astronomical clock</title>
+</head>
+<style>
+	.clock {
+		position:relative;
+		width:400px;
+		height:400px;
+		margin:20px auto;
+		background-color:#f5f5f5;
+		border-radius:200px;
+	}
+	
+	.clock__pointer {
+		position:absolute;
+		left:50%;
+		height:100%;
+		border-right:2px solid #000;
+		border-left:2px solid #000;
+		transition: transform .3s;
+	}
+	.clock__sun {
+		position:absolute;
+		left:-2px;
+		top:0;
+		width:4px;
+		height:4px;
+		background-color:#f00;
+	}
+	.clock__moon {
+		width:50px;
+		height:50px;
+		border-radius:25px;
+		border:1px solid #000;
+		background:url(moon.png) no-repeat;
+	}
+	
+</style>
+
+<body>
+<div class="clock">
+	<div class="clock__bohemian"></div>
+	<div class="clock__face">
+		<div class="clock__pointer">
+			<div class="clock__sun"></div>
+		</div>
+		<div class="clock__moon"></div>
+		<div class="clock__signs"></div>
+	</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="clock.js"></script>
+</body>
