@@ -3,39 +3,53 @@ var clock = {
 	}
 }
 
-/* to do: smooth transition by moving 1 degree every 4 minutes */
 var pointer = {
-	// moves at 15 degrees per hour for 24 hours
-	increment: 15,
+	// base assumption: moves at 15 degrees per hour for 24 hours
+	minuteDelay: 0,
 	rotated: 0,
-	speed: .3,
-	$el: $('.clock__pointer--sun'),
+	settings: {
+		increment: 1,
+		speed: .3,
+		$el: $('.clock__pointer--sun')		
+	},
 	move: function() {
 		var self = this;
 		
-		if(this.rotated < (360 - this.increment)) {
-			this.rotated += this.increment;
-			this.$el.css('transform','rotate('+this.rotated+'deg)');
+		if(this.rotated < (360 - this.settings.increment)) {
+			this.rotated += this.settings.increment;
+			this.settings.$el.css('transform','rotate('+this.rotated+'deg)');
 		} else {
-			this.$el.css('transform','rotate(360deg)');
+			this.settings.$el.css('transform','rotate(360deg)');
 			this.rotated = 0;
 			setTimeout( function() {
-				self.$el.css('transition', 'transform 0s');
-				self.$el.css('transform','rotate(0deg)');
-				self.$el.css('padding');
-				self.$el.css('transition', 'transform '+self.speed+'s');
-				}, (self.speed*1000) );
+				self.settings.$el.css({
+					'transition': 'transform 0s',
+					'transform':'rotate(0deg)'
+				});
+				self.settings.$el.css('padding');
+				self.settings.$el.css('transition', 'transform '+self.settings.speed+'s');
+			}, (self.settings.speed*1000) );
 		}
 		
-		setTimeout( function(){ self.move() }, 60*60*1000);
+		setTimeout( function(){ self.move() }, self.minuteDelay*60*1000);
 	},
 	init: function(time) {
 		var self = this;
-		this.rotated = time.getHours() * this.increment;
-		this.$el.css('transform','rotate('+this.rotated+'deg)');
 		
-		var millisecondsLeft = (time.getMinutes() * 60 + time.getSeconds()) * 1000 + time.getMilliseconds();
-		millisecondsLeft = 60*60*1000 - millisecondsLeft;
+		// find the frequency that the hand moves based on given increment
+		this.minuteDelay = 60/15 * this.settings.increment;
+		
+		// how far the hand should be rotated already given the inputed time
+		var currMinutes = time.getMinutes();
+		var totMinutes = time.getHours() * 60 + currMinutes;
+		this.rotated = Math.floor(totMinutes / this.minuteDelay) * this.settings.increment;
+		this.settings.$el.css('transform','rotate('+this.rotated+'deg)');
+		
+		// how much time in milliseconds are are into the rotation cycle
+		var minutesLeftover = totMinutes % this.minuteDelay;
+		var millisecondsLeft = (minutesLeftover * 60 + time.getSeconds()) * 1000 + time.getMilliseconds();
+		// how much time left until the next time the hand should move
+		millisecondsLeft = this.minuteDelay*60*1000 - millisecondsLeft;
 		
 		setTimeout( function(){ self.move() }, millisecondsLeft);
 	}
@@ -192,6 +206,8 @@ var zodiac = {
 var bohemian = {
 };
 
+
+// latitude, longitude: 34.0486606,-118.248216
 
 $(function() {
 	var now = new Date();
